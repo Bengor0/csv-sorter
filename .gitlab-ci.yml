@@ -1,0 +1,53 @@
+variables:
+  BUILD_DIR: "${CI_PROJECT_DIR}/.."
+  MAVEN_LOCAL_REPO: "${CI_PROJECT_DIR}/.m2/repository"
+  MAVEN_OPTS: "-Dmaven.repo.local=${MAVEN_LOCAL_REPO}"
+  HW02_PROJECT_DIR: "${BUILD_DIR}/2022-hw03-csv-sorter-hw02"
+  HW02_GIT_REPO_NAME: "2022-hw02-labels.git"
+  HW02_GIT_BRANCH: "main"
+  HW02_GIT_REPO_URL: "https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.fi.muni.cz/${CI_PROJECT_NAMESPACE}/${HW02_GIT_REPO_NAME}"
+
+default:
+  tags:
+    - shared-fi
+  image: maven:3-openjdk-11
+
+stages:
+  - dependency
+  - build
+  - test
+
+build_hw02:
+  stage: dependency
+  script:
+    - rm -rf ${HW02_PROJECT_DIR} # Remove previous build of hw02
+    - git clone --branch ${HW02_GIT_BRANCH} ${HW02_GIT_REPO_URL} ${HW02_PROJECT_DIR}
+    - cd ${HW02_PROJECT_DIR}
+    - mvn clean install -B -Dcheckstyle.skip=true
+  artifacts:
+    paths:
+      - ${MAVEN_LOCAL_REPO}
+
+build_hw03:
+  stage: build
+  script:
+    - mvn clean install -B -U -DskipTests
+
+.test_template:
+  stage: test
+  artifacts:
+    when: always
+    reports:
+      junit:
+        - target/surefire-reports/TEST-*.xml
+
+
+test_hw03:
+  extends: .test_template
+  script:
+    - mvn test -B
+
+test_pedantic_hw03:
+  extends: .test_template
+  script:
+    - mvn test -Ppedantic -B -U
