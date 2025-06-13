@@ -37,27 +37,17 @@ final class Application {
         Path outputDirectory = options.getOutput();
         Path filterFile = options.getFilters();
         CsvToolkit toolkit = DefaultToolkit.create(options.getDelimiter().charAt(0), '"', options.getCharset());
-        ElementHeadedConvertor elementConvertor = new ElementHeadedConvertor();
+        LabeledItemHeadedConvertor labeledItemConvertor = new LabeledItemHeadedConvertor();
         Set<HasLabels> labeledItems = new LinkedHashSet<>();
         Set<Map<String, String>> csvFiltersMaps = new LinkedHashSet<>();
-        int csvColumns = 0;
-        List<String> csvHeader;
 
         //reads csv file with articles/Pokemon and saves each line as a HasLabels object.
         try (var reader = toolkit.readWithHeader(inputFile)) {
             while (reader.ready()) {
-                var line = reader.read(elementConvertor);
-                if (csvColumns == 0) {
-                    csvColumns = elementConvertor.toData(line).entrySet().size();
-                }
+                var line = reader.read(labeledItemConvertor);
                 labeledItems.add(line);
             }
         }
-
-        if (csvColumns == 4){
-            csvHeader = List.of("name", "date_published", "hits", "labels");
-        } else csvHeader = List.of("Name", "Labels", "Total", "HP", "Attack", "Defense",
-                "Sp. Atk", "Sp. Def", "Speed");
 
         //reads csv file with csvFiltersMaps and saves each line as a Map where key is name and value is filter expression.
         try (var reader = toolkit.readWithHeader(filterFile)) {
@@ -73,10 +63,10 @@ final class Application {
             Set<HasLabels> filteredLabeledItems = new LinkedHashSet<>(filter.matching(labeledItems));
 
             if (filteredLabeledItems.size() > 0) {
-                try (var writer = toolkit.writeWithHeader(outputFile, csvHeader)) {
+                try (var writer = toolkit.writeWithHeader(outputFile, labeledItemConvertor.header)) {
                     filteredLabeledItems.forEach(filteredLabeledItem -> {
                         try {
-                            writer.write(elementConvertor, filteredLabeledItem);
+                            writer.write(labeledItemConvertor, filteredLabeledItem);
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -86,36 +76,36 @@ final class Application {
         }
     }
 
-    static class ElementHeadedConvertor implements ValueConvertor<Map<String, String>, HasLabels> {
-        private String[] header;
+    static class LabeledItemHeadedConvertor implements ValueConvertor<Map<String, String>, HasLabels> {
+        private List<String> header;
 
         @Override
         public HasLabels toDomain(Map<String, String> data) {
-            header = data.keySet().toArray(new String[0]);
-            if (header.length == 4){
+            header = new ArrayList<>(data.keySet());
+            if (header.size() == 4){
                 return new Article(
-                        data.get(header[0]),
-                        data.get(header[1]),
-                        data.get(header[2]),
-                        Arrays.stream(data.get(header[3]).split(" "))
+                        data.get(header.get(0)),
+                        data.get(header.get(1)),
+                        data.get(header.get(2)),
+                        Arrays.stream(data.get(header.get(3)).split(" "))
                                 .collect(Collectors.toCollection(LinkedHashSet::new))
                 );
-            } if (header.length == 10) {
+            } if (header.size() == 10) {
                 return new Pokemon(
-                        data.get(header[1]),
-                        Arrays.stream(data.get(header[2]).split(" "))
+                        data.get(header.get(1)),
+                        Arrays.stream(data.get(header.get(2)).split(" "))
                                 .collect(Collectors.toCollection(LinkedHashSet::new)),
-                        data.get(header[3]),
-                        data.get(header[4]),
-                        data.get(header[5]),
-                        data.get(header[6]),
-                        data.get(header[7]),
-                        data.get(header[8]),
-                        data.get(header[9])
+                        data.get(header.get(3)),
+                        data.get(header.get(4)),
+                        data.get(header.get(5)),
+                        data.get(header.get(6)),
+                        data.get(header.get(7)),
+                        data.get(header.get(8)),
+                        data.get(header.get(9))
                 );
             } else {
                 throw new RuntimeException(String.format("Unexpected number of headers (expecting 4 or 10) and got %s",
-                        header.length));
+                        header.size()));
             }
         }
 
@@ -123,20 +113,20 @@ final class Application {
         public Map<String, String> toData(HasLabels labeled) {
             LinkedHashMap<String, String> orderedMap = new LinkedHashMap<>();
             if (labeled instanceof Article) {
-                orderedMap.put(header[0], ((Article) labeled).title());
-                orderedMap.put(header[1], ((Article) labeled).date());
-                orderedMap.put(header[2], ((Article) labeled).hits());
-                orderedMap.put(header[3], ((Article) labeled).labelsToString());
+                orderedMap.put(header.get(0), ((Article) labeled).title());
+                orderedMap.put(header.get(1), ((Article) labeled).date());
+                orderedMap.put(header.get(2), ((Article) labeled).hits());
+                orderedMap.put(header.get(3), ((Article) labeled).labelsToString());
             } else {
-                orderedMap.put(header[1], ((Pokemon) labeled).name());
-                orderedMap.put(header[2], ((Pokemon) labeled).labelsToString());
-                orderedMap.put(header[3], ((Pokemon) labeled).total());
-                orderedMap.put(header[4], ((Pokemon) labeled).hitPoints());
-                orderedMap.put(header[5], ((Pokemon) labeled).attack());
-                orderedMap.put(header[6], ((Pokemon) labeled).defense());
-                orderedMap.put(header[7], ((Pokemon) labeled).specialAttack());
-                orderedMap.put(header[8], ((Pokemon) labeled).specialDefense());
-                orderedMap.put(header[9], ((Pokemon) labeled).speed());
+                orderedMap.put(header.get(1), ((Pokemon) labeled).name());
+                orderedMap.put(header.get(2), ((Pokemon) labeled).labelsToString());
+                orderedMap.put(header.get(3), ((Pokemon) labeled).total());
+                orderedMap.put(header.get(4), ((Pokemon) labeled).hitPoints());
+                orderedMap.put(header.get(5), ((Pokemon) labeled).attack());
+                orderedMap.put(header.get(6), ((Pokemon) labeled).defense());
+                orderedMap.put(header.get(7), ((Pokemon) labeled).specialAttack());
+                orderedMap.put(header.get(8), ((Pokemon) labeled).specialDefense());
+                orderedMap.put(header.get(9), ((Pokemon) labeled).speed());
             }
             return orderedMap;
         }
