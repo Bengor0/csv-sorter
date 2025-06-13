@@ -9,8 +9,8 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- dependency versions -->
         <version.plugin.shade>3.2.2</version.plugin.shade>
@@ -49,9 +49,9 @@
             <version>0.5.0-final</version>
         </dependency>
         <dependency>
-            <groupId>com.github.Bengor0</groupId> <!-- IMPORTANT: Changes! -->
-            <artifactId>labels-matcher-filter</artifactId>          <!-- IMPORTANT: Changes! -->
-            <version>v1.0.0</version>      <!-- e.g., v1.0.0 or a full commit hash -->
+            <groupId>com.github.Bengor0</groupId>
+            <artifactId>labels-matcher-filter</artifactId>
+            <version>v1.0.2</version>
         </dependency>
         <!--NOTE: Don't touch anything outside this section -->
         <dependency>

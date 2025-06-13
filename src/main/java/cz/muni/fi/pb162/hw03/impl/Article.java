@@ -2,25 +2,41 @@ package cz.muni.fi.pb162.hw03.impl;
 
 import cz.muni.fi.pb162.hw02.HasLabels;
 
+import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
 
-public class Article implements HasLabels {
-    private final Set<String> labels;
-    private final String title;
-    private final String date;
-    private final String hits;
-
-    public Article(Set<String> labels, String title, String date, String hits) {
+public record Article(String title, String date,
+                      String hits, LinkedHashSet<String> labels) implements HasLabels {
+    public Article {
         Objects.requireNonNull(title, "Title should not be null");
         Objects.requireNonNull(labels, "Labels should not be null");
         Objects.requireNonNull(date, "Date should not be null");
         Objects.requireNonNull(hits, "Hits should not be null");
 
-        this.labels = labels;
-        this.title = title;
-        this.date = date;
-        this.hits = hits;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Article)) return false;
+        Article article = (Article) o;
+        return getTitle().equals(article.getTitle()) && getDate().equals(article.getDate())
+                && getHits().equals(article.getHits());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getLabels(), getTitle(), getDate(), getHits());
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s, %s, %s, %s", title, date, hits, labelsToString());
+    }
+
+    public String labelsToString() {
+        return String.join(" ", labels);
     }
 
     @Override

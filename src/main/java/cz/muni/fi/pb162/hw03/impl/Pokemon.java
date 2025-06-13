@@ -1,20 +1,15 @@
 package cz.muni.fi.pb162.hw03.impl;
 
+import cz.muni.fi.pb162.hw02.HasLabels;
+
+import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
 
-public class Pokemon implements IsPokemon {
-    private final String name;
-    private final Set<String> labels;
-    private final String total;
-    private final String attack;
-    private final String defense;
-    private final String specialAttack;
-    private final String specialDefense;
-    private final String speed;
+public record Pokemon(String name, LinkedHashSet<String> labels, String total, String hitPoints, String attack,
+                      String defense, String specialAttack, String specialDefense, String speed) implements HasLabels {
 
-    public Pokemon(String name, Set<String> labels, String total, String attack,
-                   String defense, String specialAttack, String specialDefense, String speed) {
+    public Pokemon {
         Objects.requireNonNull(name, "Name should not be null");
         Objects.requireNonNull(labels, "Labels should not be null");
         Objects.requireNonNull(total, "Total should not be null");
@@ -23,21 +18,34 @@ public class Pokemon implements IsPokemon {
         Objects.requireNonNull(specialAttack, "Special attack should not be null");
         Objects.requireNonNull(specialDefense, "Special defense should not be null");
         Objects.requireNonNull(speed, "Speed should not be null");
-
-        this.name = name;
-        this.labels = labels;
-        this.total = total;
-        this.attack = attack;
-        this.defense = defense;
-        this.specialAttack = specialAttack;
-        this.specialDefense = specialDefense;
-        this.speed = speed;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Pokemon)) return false;
+        Pokemon pokemon = (Pokemon) o;
+        return name.equals(pokemon.name);
+    }
 
     @Override
-    public String getName() {
-        return this.name;
+    public int hashCode() {
+        return Objects.hash(name);
+    }
+
+    @Override
+    public String name() {
+        return name;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s, %s, %s, %s, %s, %s, %s, %s", name, labelsToString(),
+                total, attack, defense, specialAttack, specialDefense, speed);
+    }
+
+    public String labelsToString() {
+        return String.join(" ", labels);
     }
 
     @Override
@@ -46,32 +54,17 @@ public class Pokemon implements IsPokemon {
     }
 
     @Override
-    public String getTotal() {
-        return this.total;
+    public String getTitle() {
+        return null;
     }
 
     @Override
-    public String getAttack() {
-        return this.attack;
+    public String getDate() {
+        return null;
     }
 
     @Override
-    public String getDefense() {
-        return this.defense;
-    }
-
-    @Override
-    public String getSpecialAttack() {
-        return this.specialAttack;
-    }
-
-    @Override
-    public String getSpecialDefense() {
-        return this.specialDefense;
-    }
-
-    @Override
-    public String getSpeed() {
-        return this.speed;
+    public String getHits() {
+        return null;
     }
 }

@@ -2,41 +2,24 @@ package cz.muni.fi.pb162.hw03.impl;
 
 import cz.muni.fi.pb162.hw02.HasLabels;
 import cz.muni.fi.pb162.hw02.impl.Filter;
-import cz.muni.fi.pb162.hw03.cmd.CommandLine;
 import net.cechacek.edu.pb162.csv.CsvToolkit;
 import net.cechacek.edu.pb162.csv.DefaultToolkit;
 import net.cechacek.edu.pb162.csv.ValueConvertor;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
-import java.util.stream.Collectors;
 
-/**
- * Application Runtime
- */
-final class Application {
+public class Main {
 
-    private final ApplicationOptions options;
 
-    Application(ApplicationOptions options, CommandLine cli) {
-        Objects.requireNonNull(options);
-        Objects.requireNonNull(cli);
-
-        this.options = options;
-    }
-
-    /**
-     * Note:    This method represents the runtime logic.
-     * However, you should still use proper decomposition.
-     * <p>
-     * Application runtime logic
-     */
-    void run() throws IOException {
-        Path inputFile = options.getInput();
-        Path outputDirectory = options.getOutput();
-        Path filterFile = options.getFilters();
-        CsvToolkit toolkit = DefaultToolkit.create(options.getDelimiter().charAt(0), '"', options.getCharset());
+    public static void main(String[] args) throws IOException {
+        Path inputFile = Paths.get("data.csv");
+        Path outputDirectory = Paths.get("out");
+        Path filterFile = Paths.get("filters.csv");
+        CsvToolkit toolkit = DefaultToolkit.create(';', '"', StandardCharsets.UTF_8);
         ElementHeadedConvertor elementConvertor = new ElementHeadedConvertor();
         Set<HasLabels> labeledItems = new LinkedHashSet<>();
         Set<Map<String, String>> csvFiltersMaps = new LinkedHashSet<>();
@@ -97,14 +80,12 @@ final class Application {
                         data.get(header[0]),
                         data.get(header[1]),
                         data.get(header[2]),
-                        Arrays.stream(data.get(header[3]).split(" "))
-                                .collect(Collectors.toCollection(LinkedHashSet::new))
+                        new LinkedHashSet<>(Set.of(data.get(header[3]).split(" ")))
                 );
             } if (header.length == 10) {
                 return new Pokemon(
                         data.get(header[1]),
-                        Arrays.stream(data.get(header[2]).split(" "))
-                                .collect(Collectors.toCollection(LinkedHashSet::new)),
+                        new LinkedHashSet<>(Set.of(data.get(header[2]).split(" "))),
                         data.get(header[3]),
                         data.get(header[4]),
                         data.get(header[5]),
@@ -114,8 +95,8 @@ final class Application {
                         data.get(header[9])
                 );
             } else {
-                throw new RuntimeException(String.format("Unexpected number of headers (expecting 4 or 10) and got %s",
-                        header.length));
+                System.out.println("kokoot");
+                return null;
             }
         }
 
