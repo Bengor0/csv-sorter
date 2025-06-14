@@ -1,7 +1,8 @@
 package cz.muni.fi.pb162.hw03.impl.Utils;
 
 import cz.muni.fi.pb162.hw02.HasLabels;
-import cz.muni.fi.pb162.hw02.impl.Filter;
+import cz.muni.fi.pb162.hw02.LabelFilter;
+import cz.muni.fi.pb162.hw02.impl.LabeledOperations;
 import cz.muni.fi.pb162.hw03.impl.LabeledItemHeadedConvertor;
 import net.cechacek.edu.pb162.csv.CsvToolkit;
 
@@ -74,7 +75,7 @@ public final class CsvUtils {
                                           Set<Map<String, String>> csvFilters) throws IOException {
         for (Map<String, String> csvFilter : csvFilters) {
             Path outputPath = outputDirectory.resolve(csvFilter.get("name") + ".csv");
-            Filter filter = new Filter(csvFilter.get("expression"));
+            LabelFilter filter = LabeledOperations.expressionFilter(csvFilter.get("expression"));
             Collection<HasLabels> filteredLabeledItems = filter.matching(labeledItems);
 
             if (!filteredLabeledItems.isEmpty()) {
