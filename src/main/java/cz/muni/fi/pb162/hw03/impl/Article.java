@@ -18,8 +18,7 @@ public record Article(String title, String date,
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Article)) return false;
-        Article article = (Article) o;
+        if (!(o instanceof Article article)) return false;
         return getTitle().equals(article.getTitle()) && getDate().equals(article.getDate())
                 && getHits().equals(article.getHits());
     }

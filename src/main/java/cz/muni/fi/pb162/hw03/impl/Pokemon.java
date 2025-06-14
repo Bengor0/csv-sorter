@@ -22,8 +22,7 @@ public record Pokemon(String name, Set<String> labels, String total, String hitP
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Pokemon)) return false;
-        Pokemon pokemon = (Pokemon) o;
+        if (!(o instanceof Pokemon pokemon)) return false;
         return name.equals(pokemon.name);
     }
 
