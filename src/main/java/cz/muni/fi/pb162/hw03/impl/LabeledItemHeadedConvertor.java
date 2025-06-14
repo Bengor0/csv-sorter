@@ -3,11 +3,17 @@ package cz.muni.fi.pb162.hw03.impl;
 import cz.muni.fi.pb162.hw02.HasLabels;
 import net.cechacek.edu.pb162.csv.ValueConvertor;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.LinkedHashMap;
 import java.util.stream.Collectors;
 
+
 /**
- * Static class representing labeled item convertor. Provides methods for converting
+ * Class representing convertor of labeled items. Provides methods for converting
  * csv data from Map to an instance of HasLabels and vice versa. Create new instance
  * of LabeledItemHeadedConvertor for each csv file if header structure or naming differs.
  */
@@ -32,7 +38,7 @@ public class LabeledItemHeadedConvertor implements ValueConvertor<Map<String, St
     public HasLabels toDomain(Map<String, String> data) {
         header = new ArrayList<>(data.keySet());
 
-        if (header.size() == 4){
+        if (header.size() == 4) {
             return new Article(
                     data.get(header.get(0)),
                     data.get(header.get(1)),
@@ -40,7 +46,7 @@ public class LabeledItemHeadedConvertor implements ValueConvertor<Map<String, St
                     Arrays.stream(data.get(header.get(3)).split(" "))
                             .collect(Collectors.toCollection(LinkedHashSet::new))
             );
-        } if (header.size() == 10) {
+        } else if (header.size() == 10) {
             return new Pokemon(
                     data.get(header.get(1)),
                     Arrays.stream(data.get(header.get(2)).split(" "))

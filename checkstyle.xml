@@ -16,7 +16,7 @@
     <module name="TreeWalker">
         <!-- Checks for Javadoc comments -->
         <module name="JavadocMethod">
-            <property name="scope" value="public"/>
+
         </module>
         <module name="MissingJavadocMethodCheck">
             <property name="allowMissingPropertyJavadoc" value="true"/>

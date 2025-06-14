@@ -15,7 +15,7 @@
         <!-- dependency versions -->
         <version.plugin.shade>3.2.2</version.plugin.shade>
         <version.plugin.surefire>2.22.2</version.plugin.surefire>
-        <version.plugin.checkstyle>3.1.2</version.plugin.checkstyle>
+        <version.plugin.checkstyle>3.3.1</version.plugin.checkstyle>
         <version.plugin.source>2.4</version.plugin.source>
         <version.junit.jupiter>5.8.2</version.junit.jupiter>
         <version.assertj>3.22.0</version.assertj>
@@ -144,7 +144,6 @@
                 <version>${version.plugin.checkstyle}</version>
                 <configuration>
                     <configLocation>checkstyle.xml</configLocation>
-                    <encoding>UTF-8</encoding>
                     <consoleOutput>true</consoleOutput>
                     <failsOnError>true</failsOnError>
                     <linkXRef>false</linkXRef>
