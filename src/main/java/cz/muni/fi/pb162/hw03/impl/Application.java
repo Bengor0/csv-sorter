@@ -57,13 +57,14 @@ final class Application {
             }
         }
 
+        // For each filter name writes filtered non-empty labeled items to a new csv file.
         for (Map<String, String> csvFilterMap : csvFiltersMaps) {
             Path outputFile = outputDirectory.resolve(csvFilterMap.get("name") + ".csv");
             Filter filter = new Filter(csvFilterMap.get("expression"));
-            Set<HasLabels> filteredLabeledItems = new LinkedHashSet<>(filter.matching(labeledItems));
+            Collection<HasLabels> filteredLabeledItems = filter.matching(labeledItems);
 
             if (filteredLabeledItems.size() > 0) {
-                try (var writer = toolkit.writeWithHeader(outputFile, labeledItemConvertor.header)) {
+                try (var writer = toolkit.writeWithHeader(outputFile, labeledItemConvertor.getHeader())) {
                     filteredLabeledItems.forEach(filteredLabeledItem -> {
                         try {
                             writer.write(labeledItemConvertor, filteredLabeledItem);
@@ -76,12 +77,22 @@ final class Application {
         }
     }
 
+    /**
+     * Static class representing labeled item convertor. Provides methods for converting
+     * csv data from Map to an instance of HasLabels and vice versa. Create new instance
+     * of LabeledItemHeadedConvertor for each csv file if header structure or naming differs.
+     */
     static class LabeledItemHeadedConvertor implements ValueConvertor<Map<String, String>, HasLabels> {
-        private List<String> header;
+        private List<String> header = null;
+
+        public List<String> getHeader() {
+            return header;
+        }
 
         @Override
         public HasLabels toDomain(Map<String, String> data) {
             header = new ArrayList<>(data.keySet());
+
             if (header.size() == 4){
                 return new Article(
                         data.get(header.get(0)),
@@ -104,20 +115,24 @@ final class Application {
                         data.get(header.get(9))
                 );
             } else {
-                throw new RuntimeException(String.format("Unexpected number of headers (expecting 4 or 10) and got %s",
-                        header.size()));
+                throw new IllegalArgumentException(String.format("Unexpected number of csv file columns." +
+                        " Expected number of 4 or 10 columns, instead received %s columns", header.size()));
             }
         }
 
         @Override
         public Map<String, String> toData(HasLabels labeled) {
+            if (header == null) {
+                throw new RuntimeException("The header for this instance hasn't been initialized. " +
+                        "Data must be read from csv file and converted to Domain first.");
+            }
             LinkedHashMap<String, String> orderedMap = new LinkedHashMap<>();
             if (labeled instanceof Article) {
                 orderedMap.put(header.get(0), ((Article) labeled).title());
                 orderedMap.put(header.get(1), ((Article) labeled).date());
                 orderedMap.put(header.get(2), ((Article) labeled).hits());
                 orderedMap.put(header.get(3), ((Article) labeled).labelsToString());
-            } else {
+            } else if (labeled instanceof Pokemon) {
                 orderedMap.put(header.get(1), ((Pokemon) labeled).name());
                 orderedMap.put(header.get(2), ((Pokemon) labeled).labelsToString());
                 orderedMap.put(header.get(3), ((Pokemon) labeled).total());
@@ -127,6 +142,9 @@ final class Application {
                 orderedMap.put(header.get(7), ((Pokemon) labeled).specialAttack());
                 orderedMap.put(header.get(8), ((Pokemon) labeled).specialDefense());
                 orderedMap.put(header.get(9), ((Pokemon) labeled).speed());
+            } else {
+                throw new IllegalArgumentException(String.format("Unexpected argument instance. " +
+                        "Expected instance of Article OR Pokemon. Instead received instance of %s", labeled.getClass()));
             }
             return orderedMap;
         }

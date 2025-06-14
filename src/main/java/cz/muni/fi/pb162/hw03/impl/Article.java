@@ -2,12 +2,11 @@ package cz.muni.fi.pb162.hw03.impl;
 
 import cz.muni.fi.pb162.hw02.HasLabels;
 
-import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
 
 public record Article(String title, String date,
-                      String hits, LinkedHashSet<String> labels) implements HasLabels {
+                      String hits, Set<String> labels) implements HasLabels {
     public Article {
         Objects.requireNonNull(title, "Title should not be null");
         Objects.requireNonNull(labels, "Labels should not be null");

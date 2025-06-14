@@ -2,11 +2,10 @@ package cz.muni.fi.pb162.hw03.impl;
 
 import cz.muni.fi.pb162.hw02.HasLabels;
 
-import java.util.LinkedHashSet;
 import java.util.Objects;
 import java.util.Set;
 
-public record Pokemon(String name, LinkedHashSet<String> labels, String total, String hitPoints, String attack,
+public record Pokemon(String name, Set<String> labels, String total, String hitPoints, String attack,
                       String defense, String specialAttack, String specialDefense, String speed) implements HasLabels {
 
     public Pokemon {
