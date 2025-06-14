@@ -16,6 +16,8 @@ import java.util.stream.Collectors;
  * Class representing convertor of labeled items. Provides methods for converting
  * csv data from Map to an instance of HasLabels and vice versa. Create new instance
  * of LabeledItemHeadedConvertor for each csv file if header structure or naming differs.
+ *
+ * @author Viktor Sulla <sulla.viktor@gmail.com>
  */
 public class LabeledItemHeadedConvertor implements ValueConvertor<Map<String, String>, HasLabels> {
     private List<String> header;
